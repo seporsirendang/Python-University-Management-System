@@ -1,0 +1,2214 @@
+PROGRAM UMS PROJECT
+
+DEFINE FUNCTION main_menu
+	WHILE True 
+		PRINT (*"Welcome to the University Management System")
+		PRINT ("1. Administrator")
+		PRINT ("2. Lecturer")
+		PRINT ("3. Student Management")
+		PRINT ("4. Registrator")
+		PRINT ("5. Accountant")
+		PRINT ("6. Exit")
+		PRINT ("What is your role?")
+		GET choice
+		IF choice EQUALS 1 THEN
+			CALL FUNCTION administrator_login()
+		ELIF choice EQUALS 2 THEN
+			CALL FUNCTION lecturer_login()
+		ELIF choice EQUALS 3 THEN
+			CALL FUNCTION student_management_login()
+		ELIF choice EQUALS 4 THEN 
+			CALL FUNCTION registrator_login()
+		ELIF choice EQUALS  5 THEN
+			CALL FUNCTION accountant_login()
+		ELIF choice EQUALS 6 THEN
+			PRINT("Exiting the system. Goodbye!")
+			BREAK
+		ELSE
+			PRINT("Invalid choice. Please try again.")
+		END IF
+	END WHILE
+END DEFINE
+			
+
+DEFINE FUNCTION login(role_code, calling_menu)
+	SET attempts TO 3
+	WHILE attempts > 0
+		PRINT("You need to enter the access code to your role")
+		GET access_code_input 
+		IF access_code_input IS NUMERIC THEN
+			IF access_code_input EQUALS role_code THEN
+				CALL FUNCTION calling_menu()
+				RETURN
+			ELSE
+				attempts EQUALS attempts - 1
+				PRINT("Incorrect code. You have " +  CONVERT attempts TO STRING +" attempt(s) left.")
+			END IF 
+		ELSE
+			PRINT("Invalid input. Please enter a number.")
+		END IF
+	END WHILE 
+	PRINT("Access denied, kicking you from the system.")
+	EXIT
+END DEFINE
+				
+
+DEFINE FUNCTION administrator_login
+	CALL FUNCTION login(54321, administrator_menu)
+END DEFINE
+
+DEFINE FUNCTION lecturer_login
+	CALL FUNCTION login(11011, lecturer_id_login)
+END DEFINE
+
+DEFINE FUNCTION student_management_login
+	CALL FUNCTION login(30003, student_management_menu)
+END DEFINE 
+
+DEFINE FUNCTION registrator_login
+	CALL FUNCTION login(77777, registrator_menu)
+END DEFINE
+
+DEFINE FUNCTION accountant_login
+	CALL FUNCTION login(12345, accountant_menu)
+END DEFINE
+
+DEFINE FUNCTION continue_back_exit
+	PRINT("What would you like to do next?")
+	WHILE TRUE 
+		PRINT("1. Continue")
+		PRINT("2. Exit")
+		GET choice 
+		IF choice IS NUMERIC THEN
+			IF choice EQUALS 1 THEN
+				BREAK LOOP
+			ELIF choice EQUALS 2 THEN
+				PRINT("Exiting the system. Goodbye.")
+				EXIT 
+			ELSE 
+				PRINT ("Please enter a number from the given menu.")
+			END IF
+		ELSE
+			PRINT("Invalid input. Please enter a number.")
+		END IF 
+	END WHILE
+END DEFINE
+
+DEFINE FUNCTION administrator_menu
+	WHILE True
+		PRINT("Administrator Menu")
+		PRINT("1. Add New Course")
+		PRINT("2. Remove Courses")
+		PRINT("3. Remove Student")
+		PRINT("4. Manage Lecturers")
+		PRINT("5. Generate Reports")
+		PRINT("6. View All Data")
+		PRINT("7. Back to Main Menu")
+		PRINT("Which Function are you looking for?")
+		GET menu_choice
+		IF menu_choice IS NUMERIC THEN
+			SET menu_choice TO CONVERT menu_choice TO INTEGER
+			IF menu_choice IN RANGE 1 TO 7 THEN
+				IF menu_choice EQUALS 7 THEN
+					BREAK LOOP
+				ELSE
+					CALL FUNCTION admin_choices(menu_choice)
+				END IF
+			ELSE
+				PRINT("Please enter a number from the given menu")
+			END IF
+		ELSE 
+			PRINT("Invalid input. Please enter a number.")
+		END IF
+	END WHILE
+END DEFINE 
+
+DEFINE FUNCTION admin_choices(menu_choice)
+	DECLARE courses AS EMPTY LIST
+	DECLARE course_list AS EMPTY LIST
+	DECLARE students_list AS EMPTY LIST 
+	IF menu_choice EQUALS 1 
+		CALL FUNCTION add_course(courses)
+	ELIF menu_choice EQUALS 2 
+		CALL FUNCTION remove_course(courses_list)
+	ELIF menu_choice EQUALS 3 
+		CALL FUNCTION remove_students(students_list)
+	ELIF menu_choice EQUALS 4
+		CALL FUNCTION manage_lecturers_menu()
+	ELIF menu_choice EQUALS 5
+		CALL FUNCTION generate_reports()
+	ELIF menu_choice EQUALS 6
+		CALL FUNCTION view_all_data_menu()
+	ELSE 
+		PRINT("Please enter a number from the given menu")
+	END IF
+	CALL FUNCTION continue_back_exit
+END DEFINE
+
+DEFINE FUNCTION manage_lecturers_menu
+	WHILE True
+		PRINT("Manage Lecturers Menu")
+		PRINT("1. Add Lecturer")
+		PRINT("2. Update Lecturer Information")
+		PRINT("3. Remove Lecturer")
+		PRINT("4. Back to Administrator Menu")
+		PRINT("Which Function are you looking for?")
+		GET menu_choice 
+		IF menu_choice IS NUMERIC THEN
+			SET menu_choice TO CONVERT menu_choice TO INTEGER
+			IF menu_choice IN RANGE 1 TO 4 THEN
+				IF menu_choice EQUALS 4 THEN
+					CALL FUNCTION administrator_menu
+					BREAK LOOP
+				ELSE
+					CALL FUNCTION lecturer_menu_choices(menu_choice)
+				END IF
+			ELSE 
+				PRINT("Please enter a number from the given menu")
+			END IF
+		ELSE
+			PRINT("Invalid input. Please enter a number.")
+		END IF
+	END WHILE
+END DEFINE
+
+DEFINE FUNCTION manage_lecturers_menu_choices(menu_choice)
+	DECLARE lecturers AS EMPTY LIST 
+	DECLARE lecturers_list AS EMPTY LIST 
+	IF menu_choice EQUALS 1
+		CALL FUNCTION add_lecturers(lecturers)
+	ElIF menu_choice EQUALS 2
+		CALL FUNCTION update_lecturers(lecturers_list)
+	ELIF menu_choice EQUALS 3
+		CALL FUNCTION remove_lecturers(lecturers_list)
+	ELSE 
+		PRINT("Please enter a number from the given menu")
+	END IF
+	CALL FUNCTION continue_back_exit
+END DEFINE
+
+DEFINE view_all_data_menu
+	WHILE True 
+		PRINT("View all data Menu")
+		PRINT("1. View Courses")
+		PRINT("2. View Lecturers")
+		PRINT("3. View Students")
+		PRINT("4. Back to Administrator Menu")
+		PRINT("Which function are you looking for?")
+		GET menu_choice
+		IF menu_choice IS NUMERIC THEN 
+			SET menu_choice TO INTEGER(menu_choice)
+			IF menu_choice IN RANGE 1 TO 4 THEN
+				IF menu_choice EQUALS 4 THEN 
+					CALL FUNCTION administrator_menu()
+					BREAK 
+				ELSE 
+					CALL FUNCTION view_all_data_choices(menu_choice)
+				END IF 
+			ELSE 
+				PRINT("Please enter a number from the given menu")
+			END IF
+		ELSE 
+			PRINT("Invalid input. Please enter a number.")
+		END IF 
+	END WHILE
+END DEFINE
+
+DEFINE view_all_data_choices
+	IF menu_choice == 1 THEN 
+		DECLARE courses_list AS EMPTY LIST 
+		PRINT("Viewing all courses")
+		file_loaded = CALL FUNCTION load_courses(courses_list)
+		IF NOT file_loaded THEN 
+			RETURN
+		END IF 
+		CALL FUNCTION display_courses(course_list)
+	ELIF menu_choice == 2 THEN
+		DECLARE lecturers_list AS EMPTY LIST
+		PRINT("Viewing all lecturers")
+		file_loaded = CALL FUNCTION load_lecturers(lecturers_list)
+		IF NOT file_loaded THEN
+			RETURN
+		END IF 
+		CALL FUNCTION display_lecturers(lecturers_list)
+	ELIF menu_choice == 3 THEN
+		DECLARE students_list AS EMPTY LIST 
+		PRINT("Viewing all students")
+		file_loaded = CALL FUNCTION load_students(students_list)
+		IF NOT file_loaded THEN
+			RETURN 
+		END IF 
+		CALL FUNCTION display_students(students_list)
+	ELSE 
+		PRINT("Please enter a number from the given menu")
+	END IF 
+	CALL FUNCTION continue_back_exit()
+END DEFINE	
+
+DEFINE FUNCTION lecturer_menu
+	WHILE True
+		PRINT("Lecturer Menu")
+		PRINT("1. View Assigned Modules")
+		PRINT("2. Record Grades")
+		PRINT("3. View Student List")
+		PRINT("4. Track Attendance")
+		PRINT("5. View Student Grades")
+		PRINT("6. Back to Main Menu")
+		PRINT("Which Function are you looking for?")
+		GET menu_choice 
+		IF menu_choice IS NUMERIC THEN
+			SET menu_choice TO CONVERT menu_choice TO INTEGER
+			IF menu_choice IN RANGE 1 TO 6 THEN 
+				IF menu_choice EQUALS 6 THEN
+					CALL FUNCTION main_menu
+					BREAK LOOP
+				ELSE
+					CALL FUNCTION lecturer_choices(menu_choice, lecturer_id, lecturer_name, course_codes)
+				END IF 
+			ELSE 
+				PRINT("Please enter a number from the given menu")
+			END IF 
+		ELSE
+			PRINT("Invalid input. Please enter a number.")
+		END IF
+	END WHILE
+END DEFINE
+
+DEFINE FUNCTION lecturer_choices(menu_choice, lecturer_id, lecturer_name, course_codes)
+	IF menu_choice EQUALS 1 THEN
+		PRINT("View Assigned Modules")
+		CALL FUNCTION view_assigned_menu(lecturer_name, course_codes)
+	ELIF menu_choice EQUALS 2
+		PRINT("Record Grades")
+		selected_module = CALL FUNCTION choose_module(course_codes)
+		IF selected_module THEN
+			PRINT('')
+			selected_student = CALL FUNCTION choose_student()
+			IF selected_student THEN
+				CALL FUNCTION record_grades(selected_module, selected_student)
+			END IF
+		END IF 
+	ELIF menu_choice EQUALS 3
+		PRINT("View Student List")
+		CALL FUNCTION view_studet_list(lecturer_id)
+	ELIF menu_choice EQUALS 4
+		PRINT("Track Attendance")
+		selected_module = CALL FUNCTION choose_module(course_codes)
+		IF selected_module THEN 
+			PRINT('')
+			selected_student = CALL FUNCTION choose_student()
+			IF selected_student THEN
+				CALL FUNCTION mark attendance(selected_module, selected_student)
+			END IF
+		END IF
+	ELIF menu_choice EQUALS 5 THEN
+		PRINT("View Student Grades")
+		selected_module = CALL FUNCTION choose_module(course_codes)
+		IF selected_module THEN 
+			PRINT('')
+			CALL FUNCTION view_studet_grades(lecturer_id, selected_module)
+		END IF
+	ELSE 
+		PRINT("Please enter a number from the given menu")
+	END IF
+	CALL FUNCTION continue_back_exit()
+END DEFINE
+
+DEFINE FUNCTION student_management_menu
+	WHILE TRUE 
+		PRINT("Student Management Menu")
+		PRINT("1. View Available Modules")
+		PRINT("2. Enroll Student")
+		PRINT("3. Un-Enroll Student")
+		PRINT("4. View Grades")
+		PRINT("5. Access Attendance Record")
+		PRINT("6. Back to Main Menu")
+		PRINT("Which Function are you looking for?")
+		GET menu_choice 
+		IF menu_choice IS NUMERIC THEN
+			SET menu_choice TO CONVERT menu_choice TO INTEGER
+			IF menu_choice IN RANGE 1 TO 6 THEN 
+				IF menu_choice EQUALS 6 THEN
+					CALL FUNCTION main_menu
+					BREAK LOOP
+				ELSE
+					CALL FUNCTION student_management_choices(menu_choice)
+				END IF
+			ELSE 
+				PRINT("Please enter a number from the given menu")
+			END IF
+		ELSE
+			PRINT("Invalid input. Please enter a number.")
+		END IF
+	END WHILE
+END DEFINE
+
+DEFINE FUNCTION student_management_choices(menu_choice)
+	IF menu_choice EQUALS 1 THEN
+		CALL FUNCTION available_module()
+	ELIF menu_choice EQUALS 2 THEN
+		CALL FUNCTION enroll_student()
+	ELIF menu_choice EQUALS 3 THEN
+		CALL FUNCTION un_enroll_student()
+	ELIF menu_choice EQUALS 4 THEN
+		CALL FUNCTION view_grades()
+	ELIF menu_choice EQUALS 5 THEN
+		CALL FUNCTION view_attendance()
+	ELSE 
+		PRINT("Please enter a number from the given menu")
+	END IF
+	CALL FUNCTION continue_back_exit
+END DEFINE
+
+DEFINE registrator_menu
+WHILE TRUE 
+		PRINT("Registrator Menu")
+		PRINT("1. Register New Student")
+		PRINT("2. Update Student Records")
+		PRINT("3. Manage Enrollments")
+		PRINT("4. Issue Transcripts")
+		PRINT("5. View Student Information")
+		PRINT("6. Back to Main Menu")
+		PRINT("Which Function are you looking for?")
+		GET menu_choice 
+		IF menu_choice IS NUMERIC THEN
+			SET menu_choice TO CONVERT menu_choice TO INTEGER
+			IF menu_choice IN RANGE 1 TO 6 THEN
+				IF menu_choice EQUALS 6 THEN
+					CALL FUNCTION main_menu
+					BREAK LOOP
+				ELSE
+					CALL FUNCTION registrator_choices(menu_choice)
+				END IF
+				IF menu_choice EQUALS 6 THEN
+					BREAK LOOP
+				END IF
+			ELSE 
+				PRINT("Please enter a number from the given menu")
+			END IF
+		ELSE
+			PRINT("Invalid input. Please enter a number.")
+		END IF
+	END WHILE
+END DEFINE
+
+DEFINE FUNCTION registrator_choices(menu_choice)
+	DECLARE students AS EMPTY LIST
+	DECLARE students_list AS EMPTY LIST
+	
+	IF menu_choice EQUALS 1 THEN
+		CALL FUNCTION register_new_students(students)
+	ElIF menu_choice EQUALS 2 THEN
+		CALL FUNCTION update_students(students_list)
+	ELIF menu_choice EQUALS 3 THEN
+		CALL FUNCTION manage_enrollments
+	ELIF menu_choice EQUALS 4 THEN
+		CALL FUNCTION issue_transcripts
+	ELIF menu_choice EQUALS 5 THEN
+		CALL FUNCTION student_information
+	ELSE 
+		PRINT("Please enter a number from the given menu")
+	END IF
+	CALL FUNCTION continue_back_exit
+END DEFINE
+
+DEFINE accountant_menu
+	WHILE TRUE 
+		PRINT("Accountant Menu")
+		PRINT("1. Record Tuition Fee")
+		PRINT("2. Update Payment Record")
+		PRINT("3. View Outstanding Fee")
+		PRINT("4. Issue Fee Receipts")
+		PRINT("5. View Financial Summary")
+		PRINT("6. Back to Main Menu")
+		PRINT("Which Function are you looking for?")
+		GET menu_choice 
+		IF menu_choice IS NUMERIC THEN
+			SET menu_choice TO CONVERT menu_choice TO INTEGER
+			IF menu_choice IN RANGE 1 TO 6 THEN 
+				IF menu_choice EQUALS 6 THEN
+					CALL FUNCTION main_menu
+					BREAK LOOP
+				ELSE
+					CALL FUNCTION accountant_choices(menu_choices)
+				END IF
+			ELSE 
+				PRINT("Please enter a number from the given menu")
+			END IF
+		ELSE
+			PRINT("Invalid input. Please enter a number.")
+		END IF
+	END WHILE
+END DEFINE 
+
+DEFINE FUNCTION accountant_choices(menu_choice)
+	IF menu_choice EQUALS 1 THEN
+		CALL FUNCTION record_or_add_tuition
+	ElIF menu_choice EQUALS 2 THEN
+		CALL FUNCTION payment_records
+	ELIF menu_choice EQUALS 3 THEN
+		CALL FUNCTION outstanding_fee
+	ELIF menu_choice EQUALS 4 THEN
+		CALL FUNCTION fee_receipts
+	ELIF menu_choice EQUALS 5 THEN
+		CALL FUNCTION financial_summary
+	ELSE 
+		PRINT("Please enter a number from the given menu")
+	END IF
+	CALL FUNCTION continue_back_exit
+END DEFINE
+
+
+
+DEFINE FUNCTION count_lines_with_values(file_path)
+	OPEN file file_path IN READ MODE AS file 
+	SET line_count TO 0
+	FOR EACH line IN file 
+		IF line.strip() IS NOT EMPTY THEN
+			SET line_count TO line_count + 1
+		END IF 
+	END FOR
+	RETURN line_count
+END DEFINE 
+
+DEFINE FUNCTION cancel_command(input_value)
+    IF input_value.strip().upper() EQUALS "CANCEL" THEN
+        RETURN True
+    ELSE
+        RETURN False
+    END IF
+END DEFINE
+
+DEFINE FUNCTION null_input(input_value)
+    IF input_value EQUALS "" THEN
+        PRINT("Input cannot be null, Please enter a valid input!")
+        RETURN True
+    ELSE
+        RETURN False
+    END IF
+END DEFINE
+
+DEFINE FUNCTION add_course_code(courses)
+    WHILE True
+        PRINT("Please enter the new course code :")
+        GET new_course_code
+        IF null_input(new_course_code) THEN
+            CONTINUE
+        ELSE IF cancel_command(new_course_code) THEN
+            RETURN None
+        END IF
+        FOR EACH course IN courses
+            IF course[0] EQUALS new_course_code THEN
+                PRINT("Invalid input! (" + new_course_code + " already exists).")
+                BREAK
+            END IF
+        END FOR
+        IF file_exists("courses.txt") THEN
+            OPEN file "courses.txt" IN READ MODE AS course_files
+            SET found TO False
+            FOR EACH course IN course_files
+                SPLIT course BY "," INTO data
+                SET course_code_from_file TO data[0].strip()
+                IF course_code_from_file EQUALS new_course_code THEN
+                    PRINT("Invalid input! (" + new_course_code + " already exists).")
+                    SET found TO True
+                    BREAK
+                END IF
+            END FOR
+            IF NOT found THEN
+                RETURN new_course_code
+            END IF
+        ELSE
+            RETURN new_course_code
+        END IF
+    END WHILE
+END DEFINE
+
+
+DEFINE FUNCTION add_course_name
+    WHILE True
+        PRINT("Please enter the name of the new course: ")
+        GET new_course_name
+        IF null_input(new_course_name) THEN
+            CONTINUE
+        ELSE IF cancel_command(new_course_name) THEN
+            RETURN None
+        ELSE IF any(char IS NUMERIC FOR char IN new_course_name) THEN
+            PRINT("Course name must be alphabetic. Please try again!")
+            CONTINUE
+        ELSE
+            RETURN new_course_name
+        END IF
+    END WHILE
+END DEFINE
+
+DEFINE FUNCTION add_course_credits
+    WHILE True
+        PRINT("Please enter the new course credits: ")
+        GET new_course_credits
+        IF null_input(new_course_credits) THEN
+            CONTINUE
+        ELSE IF cancel_command(new_course_credits) THEN
+            RETURN None
+        ELSE IF new_course_credits.isnumeric() THEN
+            RETURN new_course_credits
+        ELSE
+            PRINT("Credits must be numeric. Please try again!")
+        END IF
+    END WHILE
+END DEFINE
+
+DEFINE FUNCTION add_course(courses)
+    PRINT("(If you want to cancel, type 'cancel' at any step to stop adding the course.)")
+    SET new_course_code TO CALL FUNCTION add_course_code(courses)
+    IF new_course_code IS None THEN
+        RETURN
+    END IF
+    SET new_course_name TO CALL FUNCTION add_course_name()
+    IF new_course_name IS None THEN
+        RETURN
+    END IF
+    SET new_course_credits TO CALL FUNCTION add_course_credits()
+    IF new_course_credits IS None THEN
+        RETURN
+    END IF
+    APPEND [new_course_code, new_course_name, new_course_credits] TO courses
+    PRINT("Course " + new_course_name + " added successfully.")
+    OPEN file "courses.txt" IN APPEND MODE AS file
+    WRITE new_course_code + "," + new_course_name + "," + new_course_credits + "\n" TO file
+END DEFINE
+
+DEFINE FUNCTION load_courses(courses_list)
+    IF file_exists("courses.txt") THEN
+        OPEN file "courses.txt" IN READ MODE AS file
+        FOR EACH line IN file
+            SPLIT line BY "," INTO course_code, course_name, course_credits
+            APPEND [course_code, course_name, course_credits] TO courses_list
+        END FOR
+        RETURN True
+    ELSE
+        PRINT("Courses file is not found in the system.")
+        RETURN False
+    END IF
+END DEFINE
+
+DEFINE FUNCTION display_courses(courses_list)
+    IF NOT courses_list THEN
+        PRINT("\nNo courses available")
+        RETURN False
+    END IF
+    PRINT("Below is the list of the courses:\n")
+    FOR EACH index, course IN ENUMERATE(courses_list)
+        PRINT(index + 1 + ". Course Code: " + course[0] + "\n   Course Name: " + course[1] + "\n   Credits: " + course[2])
+    END FOR
+    RETURN True
+END DEFINE
+
+DEFINE FUNCTION save_courses(courses_list)
+    OPEN file "courses.txt" IN WRITE MODE AS file
+    FOR EACH course IN courses_list
+        WRITE JOIN(course, ",") + "\n" TO file
+    END FOR
+END DEFINE
+
+DEFINE FUNCTION remove_courses(courses_list)
+    SET file_loaded TO CALL FUNCTION load_courses(courses_list)
+    IF NOT file_loaded THEN
+        RETURN
+    END IF
+    IF NOT CALL FUNCTION display_courses(courses_list) THEN
+        RETURN
+    END IF
+    WHILE True
+        PRINT("Enter the number of the course you want to remove: ")
+        GET courses_input
+        SET courses_input TO courses_input - 1
+        IF IS_NUMERIC(courses_input) THEN
+            IF courses_input < 0 OR courses_input >= LENGTH(courses_list) THEN
+                PRINT("Invalid input, please try again!")
+                CONTINUE
+            END IF
+            SET selected_course TO courses_list[courses_input]
+            PRINT("Selected Course: " + selected_course[0])
+            WHILE True
+                PRINT("Are you sure you want to remove " + selected_course[0] + "? (Y/N): ")
+                GET confirm
+                IF confirm EQUALS 'Y' THEN
+                    REMOVE courses_list[courses_input]
+                    PRINT("Course " + selected_course[0] + " removed successfully.")
+                    CALL FUNCTION save_courses(courses_list)
+                    RETURN
+                ELSE IF confirm EQUALS 'N' THEN
+                    PRINT("Removal canceled.")
+                    RETURN
+                ELSE
+                    PRINT("Invalid input. Please enter 'Y' or 'N'.")
+                END IF
+            END WHILE
+        ELSE
+            PRINT("Invalid input. Please enter a valid number.")
+        END IF
+    END WHILE
+END DEFINE
+
+DEFINE FUNCTION add_lecturers_id(lecturers)
+    WHILE True
+        PRINT("Please enter the lecturer's ID: ")
+        GET lecturers_id
+        IF null_input(lecturers_id) THEN
+            CONTINUE
+        ELSE IF cancel_command(lecturers_id) THEN
+            RETURN None
+        END IF
+        FOR EACH lecturer IN lecturers
+            IF lecturer[0] EQUALS lecturers_id THEN
+                PRINT("Invalid input! (" + lecturers_id + " already exists).")
+                BREAK
+            END IF
+        END FOR
+        IF file_exists("lecturers.txt") THEN
+            OPEN file "lecturers.txt" IN READ MODE AS lecturers_files
+            SET found TO False
+            FOR EACH lecturer IN lecturers_files
+                SPLIT lecturer BY "," INTO data
+                SET lecturer_id_from_file TO data[0].strip()
+                IF lecturer_id_from_file EQUALS lecturers_id THEN
+                    PRINT("Invalid input! (" + lecturers_id + " already exists).")
+                    SET found TO True
+                    BREAK
+                END IF
+            END FOR
+            IF NOT found THEN
+                RETURN lecturers_id
+            END IF
+        ELSE
+            RETURN None
+        END IF
+    END WHILE
+END DEFINE
+
+DEFINE FUNCTION add_lecturers_name
+    WHILE True
+        PRINT("Please enter the lecturer's name: ")
+        GET lecturers_name
+        IF null_input(lecturers_name) THEN
+            CONTINUE
+        ELSE IF cancel_command(lecturers_name) THEN
+            RETURN None
+        ELSE IF any(char IS NUMERIC FOR char IN lecturers_name) THEN
+            PRINT("Lecturer name must be alphabetic. Please try again!")
+            CONTINUE
+        ELSE
+            RETURN lecturers_name
+        END IF
+    END WHILE
+END DEFINE
+
+DEFINE FUNCTION add_lecturers_phone_number
+    WHILE True
+        PRINT("Please enter the lecturer's phone number (60XXXXXXXXX): ")
+        GET lecturers_phone_number
+        IF null_input(lecturers_phone_number) THEN
+            CONTINUE
+        ELSE IF cancel_command(lecturers_phone_number) THEN
+            RETURN None
+        ELSE IF lecturers_phone_number.isnumeric() THEN
+            RETURN lecturers_phone_number
+        ELSE
+            PRINT("Lecturer's phone number must be numeric. Please try again!")
+        END IF
+    END WHILE
+END DEFINE
+
+DEFINE FUNCTION add_lecturers_email
+    WHILE True
+        PRINT("Please enter the lecturer's email: ")
+        GET lecturers_email
+        IF null_input(lecturers_email) THEN
+            CONTINUE
+        ELSE IF cancel_command(lecturers_email) THEN
+            RETURN None
+        ELSE
+            RETURN lecturers_email
+        END IF
+    END WHILE
+END DEFINE
+
+DEFINE FUNCTION add_lectures_course_code
+    WHILE True
+        PRINT("\nPlease make sure to separate multiple course codes with '|'")
+        PRINT("For example: CS001|IT002|IN003")
+        PRINT("Enter 'cancel' if you want to cancel the process.\n")
+        PRINT("Please enter the lecturer's course code: ")
+        GET lecturers_course_code
+        IF null_input(lecturers_course_code) THEN
+            CONTINUE
+        ELSE IF cancel_command(lecturers_course_code) THEN
+            RETURN None
+        END IF
+
+		DECLARE validated_course_codes as empty list
+        IF file_exists("courses.txt") THEN
+            OPEN file "courses.txt" IN READ MODE AS courses_file
+            FOR EACH line IN courses_file
+                SPLIT line BY "," INTO data
+                IF data IS NOT EMPTY THEN
+                    APPEND data[0].upper() TO validated_course_codes
+                END IF
+            END FOR
+
+            SET entered_course_codes TO SPLIT lecturers_course_code BY "|"
+            SET invalid_course_codes TO [code FOR code IN entered_course_codes IF code NOT IN validated_course_codes]
+            IF invalid_course_codes IS NOT EMPTY THEN
+                PRINT("The following course codes are invalid or do not exist: " + JOIN(invalid_course_codes, ", "))
+                CONTINUE
+            END IF
+
+            DECLARE validated_lecturers_cc as empty list
+            OPEN file "lecturers.txt" IN READ MODE AS lecturers_file
+            FOR EACH line IN lecturers_file
+                SPLIT line BY "," INTO data
+                IF LENGTH(data) > 4 THEN
+                    SET lecturer_course_codes TO SPLIT data[4].upper() BY "|"
+                    FOR EACH code IN lecturer_course_codes
+                        APPEND code TO validated_lecturers_cc
+                    END FOR
+                END IF
+            END FOR
+            SET invalid_lecturers_codes TO [code FOR code IN entered_course_codes IF code IN validated_lecturers_cc]
+            IF invalid_lecturers_codes IS NOT EMPTY THEN
+                PRINT("The following course codes are already assigned to other lecturers: " + JOIN(invalid_lecturers_codes, ", "))
+                CONTINUE
+            ELSE
+                RETURN lecturers_course_code
+            END IF
+        ELSE
+            PRINT("\nFile does not exist, creating one right now.\nPlease try using the functions now.")
+            OPEN FILE "lecturers.txt" IN WRITE MODE AS create_file
+        END IF
+    END WHILE
+END DEFINE
+
+DEFINE FUNCTION add_lecturers(lecturers)
+    PRINT("(If you want to cancel, type 'cancel' at any step to stop adding the lecturer.) ")
+    SET lecturers_id TO CALL FUNCTION add_lecturers_id(lecturers)
+    IF lecturers_id IS None THEN
+        RETURN
+    END IF
+    SET lecturers_name TO CALL FUNCTION add_lecturers_name()
+    IF lecturers_name IS None THEN
+        RETURN
+    END IF
+    SET lecturers_phone_number TO CALL FUNCTION add_lecturers_phone_number()
+    IF lecturers_phone_number IS None THEN
+        RETURN
+    END IF
+    SET lecturers_email TO CALL FUNCTION add_lecturers_email()
+    IF lecturers_email IS None THEN
+        RETURN
+    END IF
+    SET lecturers_course_code TO CALL FUNCTION add_lectures_course_code()
+    IF lecturers_course_code IS None THEN
+        RETURN
+    END IF
+    APPEND [lecturers_name, lecturers_phone_number, lecturers_email, lecturers_course_code] TO lecturers
+    PRINT("Mr / Mrs " + lecturers_name + " added successfully.")
+    OPEN file "lecturers.txt" IN APPEND MODE AS file
+    WRITE lecturers_id + "," + lecturers_name + "," + lecturers_phone_number + "," + lecturers_email + "," + lecturers_course_code + "\n" TO file
+END DEFINE
+
+DEFINE FUNCTION load_lecturers(lecturers_list)
+    IF file_exists("lecturers.txt") THEN
+        OPEN file "lecturers.txt" IN READ MODE AS file
+        FOR EACH line IN file
+            IF LENGTH(line_data) EQUALS 5 THEN
+                SET identification, name, phone, email, course_code TO line_data
+                APPEND [identification, name, phone, email, course_code] TO lecturers_list
+            ELSE
+                PRINT("There may be extra values in the data. Please check again!")
+            END IF
+        END FOR
+        RETURN True
+    ELSE
+        PRINT("Lecturers file is not found in the system.")
+        RETURN False
+    END IF
+END DEFINE
+
+DEFINE FUNCTION save_lecturers(lecturers_list)
+    OPEN file "lecturers.txt" IN WRITE MODE AS file
+    FOR EACH lecturer IN lecturers_list
+        WRITE JOIN(lecturer, ",") + "\n" TO file
+    END FOR
+END DEFINE
+
+DEFINE FUNCTION display_lecturers(lecturers_list)
+    IF NOT lecturers_list THEN
+        PRINT("\nNo lecturers available")
+        RETURN False
+    END IF
+    PRINT("\nBelow is the list of the lecturers:")
+    FOR EACH index, lecturer IN ENUMERATE(lecturers_list)
+        PRINT(index + 1 + ". Lecturer's ID: " + lecturer[0] + "\n   Name: " + lecturer[1] + "\n   Phone: " + lecturer[2] + "\n   Email: " + lecturer[3] + "\n   Course Code: " + lecturer[4])
+    END FOR
+    RETURN True
+END DEFINE
+
+DEFINE FUNCTION update_lecturers_option
+    PRINT("\nWhat would you like to update?")
+    PRINT("1. Name \n2. Phone Number \n3. Email \n4. Course Code \n5. Cancel")
+    GET input_choices
+    IF input_choices.isnumeric() THEN
+        SET input_choices TO TO_INTEGER(input_choices)
+        RETURN input_choices
+    ELSE
+        RETURN None
+    END IF
+END DEFINE
+
+DEFINE FUNCTION update_lecturers_info(index_input, lecturers_list)
+    SET input_choices TO CALL FUNCTION update_lecturers_option()
+    IF input_choices == 1 THEN
+        PRINT("(If you want to cancel, type 'cancel' at any step to stop updating lecturer's name.)")
+        SET new_name TO CALL FUNCTION add_lecturers_name()
+        IF new_name IS None THEN
+            RETURN False
+        END IF
+        SET lecturers_list[index_input][1] TO new_name
+    ELSE IF input_choices == 2 THEN
+        PRINT("(If you want to cancel, type 'cancel' to stop updating lecturer's phone number.)")
+        SET new_phone_number TO CALL FUNCTION add_lecturers_phone_number()
+        IF new_phone_number IS None THEN
+            RETURN False
+        END IF
+        SET lecturers_list[index_input][2] TO new_phone_number
+    ELSE IF input_choices == 3 THEN
+        PRINT("(If you want to cancel, type 'cancel' to stop updating lecturer's email.)")
+        SET new_email TO CALL FUNCTION add_lecturers_email()
+        IF new_email IS None THEN
+            RETURN False
+        END IF
+        SET lecturers_list[index_input][3] TO new_email
+    ELSE IF input_choices == 4 THEN
+        PRINT("(If you want to cancel, type 'cancel' to stop updating lecturer's course code.)")
+        SET new_course_code TO CALL FUNCTION add_lectures_course_code()
+        IF new_course_code IS None THEN
+            RETURN False
+        END IF
+        SET lecturers_list[index_input][4] TO new_course_code
+    ELSE IF input_choices == 5 THEN
+        PRINT("Update canceled.")
+        RETURN
+    ELSE
+        PRINT("Invalid choice. Please try again.")
+        RETURN
+    END IF
+    PRINT("Lecturer " + lecturers_list[index_input][1] + " updated successfully.")
+    CALL FUNCTION save_lecturers(lecturers_list)
+END DEFINE
+
+DEFINE FUNCTION update_lecturers(lecturers_list)
+    SET file_loaded TO CALL FUNCTION load_lecturers(lecturers_list)
+    IF NOT file_loaded THEN
+        RETURN
+    END IF
+    IF NOT CALL FUNCTION display_lecturers(lecturers_list) THEN
+        RETURN
+    END IF
+    PRINT("Enter the number of the lecturer you want to update: ")
+    GET index_input
+    IF index_input.isnumeric() THEN
+        SET index_input TO TO_INTEGER(index_input) - 1
+        IF index_input < 0 OR index_input >= LENGTH(lecturers_list) THEN
+            PRINT("Invalid input, please try again!")
+            RETURN
+        END IF
+        SET selected_lecturer TO lecturers_list[index_input]
+        PRINT("\nSelected Lecturer: " + selected_lecturer[0])
+        CALL FUNCTION update_lecturers_info(index_input, lecturers_list)
+    ELSE
+        PRINT("Invalid input. Please enter a valid number.")
+    END IF
+END DEFINE
+
+DEFINE FUNCTION remove_lecturers(lecturers_list)
+    SET file_loaded TO CALL FUNCTION load_lecturers(lecturers_list)
+    IF NOT file_loaded THEN
+        RETURN
+    END IF
+    IF NOT CALL FUNCTION display_lecturers(lecturers_list) THEN
+        RETURN
+    END IF
+    WHILE True
+        PRINT("Enter the number of the lecturer you want to remove: ")
+        GET lecturers_input
+        IF lecturers_input.isnumeric() THEN
+            SET lecturers_input TO TO_INTEGER(lecturers_input) - 1
+            IF lecturers_input < 0 OR lecturers_input >= LENGTH(lecturers_list) THEN
+                PRINT("Invalid input, please try again!")
+                RETURN
+            END IF
+            SET selected_lecturer TO lecturers_list[lecturers_input]
+            PRINT("Selected Lecturer: " + selected_lecturer[0])
+            WHILE True
+                PRINT("Are you sure you want to remove " + selected_lecturer[0] + "? (Y/N): ")
+                GET confirm
+                IF confirm == 'Y' THEN
+                    REMOVE lecturers_list[lecturers_input]
+                    PRINT("Lecturer " + selected_lecturer[0] + " removed successfully.")
+                    CALL FUNCTION save_lecturers(lecturers_list)
+                    RETURN
+                ELSE IF confirm == 'N' THEN
+                    PRINT("Removal canceled.")
+                    RETURN
+                ELSE
+                    PRINT("Invalid input. Please enter 'Y' or 'N'.")
+                END IF
+            END WHILE
+        ELSE
+            PRINT("Invalid input. Please enter a valid number.")
+        END IF
+    END WHILE
+END DEFINE
+
+DEFINE FUNCTION remove_students(students_list)
+    SET file_loaded TO CALL FUNCTION load_students(students_list)
+    IF NOT file_loaded THEN
+        RETURN
+    END IF
+    IF NOT CALL FUNCTION display_students(students_list) THEN
+        RETURN
+    END IF
+    WHILE True
+        PRINT("Enter the number of the student you want to remove: ")
+        GET students_input
+        IF students_input.isnumeric() THEN
+            SET students_input TO TO_INTEGER(students_input) - 1
+            IF students_input < 0 OR students_input >= LENGTH(students_list) THEN
+                PRINT("Invalid input, please try again!")
+                RETURN
+            END IF
+            SET selected_student TO students_list[students_input]
+            PRINT("Selected Student: " + selected_student[0])
+            WHILE True
+                PRINT("Are you sure you want to remove " + selected_student[0] + "? (Y/N): ")
+                GET confirm
+                IF confirm == 'Y' THEN
+                    REMOVE students_list[students_input]
+                    PRINT("Student " + selected_student[0] + " removed successfully.")
+                    CALL FUNCTION save_students(students_list)
+                    RETURN
+                ELSE IF confirm == 'N' THEN
+                    PRINT("Removal canceled.")
+                    RETURN
+                ELSE
+                    PRINT("Invalid input. Please enter 'Y' or 'N'.")
+                END IF
+            END WHILE
+        ELSE
+            PRINT("Invalid input. Please enter a valid number.")
+        END IF
+    END WHILE
+END DEFINE
+
+DEFINE FUNCTION generate_reports
+    IF file_exists("students.txt") AND file_exists("courses.txt") AND file_exists("lecturers.txt") THEN
+        SET total_students TO CALL FUNCTION count_lines_with_values("students.txt")
+        SET total_courses TO CALL FUNCTION count_lines_with_values("courses.txt")
+        SET total_lecturers TO CALL FUNCTION count_lines_with_values("lecturers.txt")
+        PRINT("\n============ REPORTS =============")
+        PRINT("Total Students       : " + total_students)
+        PRINT("Total Courses        : " + total_courses)
+        PRINT("Total Lecturers      : " + total_lecturers)
+        PRINT("==================================\n")
+    ELSE
+        PRINT("Error: File not found")
+    END IF
+END DEFINE
+
+
+
+DEFINE FUNCTION lecturer_id_login
+	PRINT("Enter Lecture ID (Press '0' to exit): ")
+	GET lecturer_id
+	WHILE lecturer_id NOT EQUAL '0'
+		OPEN file LECTURERS_FILE IN READ MODE AS file
+		SET found TO False
+		FOR EACH line IN file
+			SPLIT line BY "," INTO data 
+			IF LENGTH OF data EQUALS 5 AND data[0] EQUALS lecturer_id THEN
+				SET fount TO True
+				SET lecturer_id TO data[0]
+				SET lecturer_name TO data[1]
+				SET course_codes TO SPLIT data[4] BY "|"
+			END IF 
+		END FOR
+		IF NOT found THEN 
+			PRINT("No lecturer found with that ID")
+			PRINT("Enter Lecturer ID (Press '0' to exit): ")
+			GET lecturer_id
+		ELSE 
+			CALL FUNCTION lecturer_menu(lecturer_id, lecturer_name, course_codes)
+		END IF
+	END WHILE
+END DEFINE
+
+DEFINE FUNCTION view_assigned_menu(lecturer_name, course_codes)
+	PRINT("Hi, " + lecturer_name + "Your assigned module(s):")
+	FOR EACH code IN course_codes
+		PRINT(" - " + code)
+	END FOR
+END DEFINE 
+
+DEFINE FUNCTION choose_module(options)
+	FOR EACH index, option IN ENUMERATE(options, START=1)
+		PRINT(index + ". " + option)
+	END FOR 
+	SET valid TO False
+	WHILE NOT valid
+		PRINT("Select a module code (press '0' to cancel): ")
+		GET choice
+		IF choice IS DIGIT AND 1 <= CONVERT choice TO INTEGER <= LENGTH OF options THEN
+			SET selected_option TO options[CONVERT choice TO INTEGER - 1]
+			PRINT("You selected: " + selected_option)
+			RETURN selected_option
+		ELSE IF choice EQUALS '0' THEN
+			RETURN None
+		ELSE
+			PRINT("Invalid choice. Please select a valid option")
+		END IF
+	END WHILE
+END DEFINE
+
+DEFINE FUNCTION choose_student
+	SET student_id TO ''
+	SET student_name TO ''
+	SET found TO False
+	WHILE NOT found
+		PRINT("Enter Student ID (press '0' to cancel): ")
+		GET student_id
+		IF student_id LOWER EQUALS '0' THEN
+			RETURN None
+		END IF
+		OPEN file ENROLLMENTS_FILE IN READ MODE AS file
+		DECLARE lines AS LIST
+		FOR EACH line IN file 
+			APPEND line TO lines
+		END FOR
+		FOR EACH line IN lines 
+			SPLIT line BY "," INTO data
+			IF data[0] EQUALS student_id THEN
+				SET found TO True
+				SET student_name TO data[1]
+				BREAK LOOP
+			END IF 
+		END FOR
+		IF NOT found THEN
+			PRINT("Student ID " + student_id + " does not exist.")
+		END IF 
+	END WHILE 
+	RETURN student_id, student_name
+END DEFINE
+
+DEFINE FUNCTION record_grades(course_codes, student_info)
+	PRINT("[Recording grade for " + student_info[1] + " for module " + course_codes + "]")
+	WHILE True
+		PRINT("Enter student's grade (input 'cancel' to cancel): ")
+		GET new_grade 
+		IF IS_DIGIT(new_grade) AND 0 <= CONVERT new_grade TO INTEGER <=100 THEN
+			OPEN file ENROLLMENTS_FILE IN READ MODE AS file 
+			DECLARE lines AS LIST 
+			FOR EACH line IN file
+				APPEND line TO lines
+			END FOR 
+			DECLARE updated_lines AS LIST 
+			SET record_found TO False
+			FOR EACH line IN lines  
+				SPLIT line BY "," INTO data 
+				IF data[0] EQUALS student_info[0] THEN
+					FOR EACH course IN data[2:]
+						IF course[0] EQUALS course_codes THEN
+							SET course[1] TO CONVERT new_grade TO INTEGER
+							SET record_found TO True
+						END IF
+					END FOR 
+					APPEND data TO updated_lines
+				ELSE
+					APPEND line TO updated_lines
+				END IF 
+			END FOR 
+			IF NOT record_found THEN
+				PRINT("No enrollment record found for ID: " + student_info[0] + " in Module " + course_codes + ".")
+				BREAK LOOP 
+			ELSE 
+				PRINT("Grade successfully updated for ID:" + student_info[0] + " in Module " + course_codes + ".")
+				OPEN file ENROLLMENTS_FILE IN WRITE MODE AS file
+				FOR EACH updated_line IN updated_lines
+					WRITE updated_line TO file 
+				END FOR 
+				BREAK LOOP 
+			END IF 
+		ELSE IF new_grade EQUALS 'CANCEL' THEN 
+			RETURN 
+		ELSE 
+			PRINT("Invalid grade input. Please enter a valid number between 0 and 100")
+		END IF 
+	END WHILE 
+	PRINT("The file path cannot be found, try and fix this issue beforehand")
+END DEFINE
+	
+DEFINE FUNCTION	get_lecturer_courses(lecturer_id)
+	OPEN file LECTURERS_FILE IN READ MODE AS file
+	DECLARE lines AS LIST 
+	FOR EACH line IN file 
+		APPEND line TO lines
+	END FOR
+	FOR EACH line IN lines 
+		SPLIT line BY "," INTO data
+		IF data[0] EQUALS lecturer_id THEN 
+			RETURN SPLIT data[4] BY "|"
+		END IF
+	END FOR
+	PRINT("Lecturer not found")
+	RETURN []
+END DEFINE 
+
+DEFINE FUNCTION group_students_by_modules(lecturer_courses)
+	DECLARE grouped_students AS LIST 
+	DECLARE students_lookup AS LIST 
+	OPEN file ENROLLMENTS_FILE IN READ MODE AS file
+	DECLARED lines AS LIST
+	FOR EACH line IN file 
+		APPEND line TO lines 
+	END FOR 
+	FOR EACH line In lines 
+		EVAL line.strip() INTO data 
+		SET student_id TO data[0]
+		SET student_name TO data[1]
+		APPEND (student_id, student_name) TO students_lookup 
+		FOR EACH course_data IN data[2:] 
+			SET course_code TO course_data[0]
+			IF course_code IN lecturer_courses THEN 
+				SET course_found TO False
+				FOR i FROM 0 TO LENGTH OF grouped_students - 1
+					IF grouped_students[i][0] EQUALS course_code THEN 
+						APPEND student_id TO grouped_students[i][1]
+						SET course_found TO True
+						BREAK LOOP 
+					END IF
+				END FOR 
+				IF NOT course_found THEN
+					APPEND (course_code, [student_id]) TO grouped_students
+				END IF 
+			END IF
+		END FOR
+	END FOR 
+	RETURN grouped_students, students_lookup
+END DEFINE
+
+DEFINE FUNCTION view_student_list(lecturer_id)
+	SET lecturer_courses TO CALL FUNCTION get_lecturer_courses(lecturer_id)
+	IF lecturer_courses IS EMPTY THEN 
+		PRINT("No courses found for the lecturer.")
+		RETURN
+	END IF 
+	SET grouped_students, students_lookup TO CALL FUNCTION group_students_by_modules(lecturer_courses)
+	FOR EACH course, student IN grouped_students
+		PRINT("Module: " + course)
+		PRINT("StudentID | Name")
+		PRINT("-" * 30)
+		FOR EACH student_id IN students
+			SET student_name TO NEXT(name FOR id_, name IN students_lookup IF id_ EQUALS student_id) ELSE "Unknown"
+			PRINT(student_id + " | " + student_name)
+		END FOR 
+		IF students IS EMPTY THEN
+			PRINT("No students found for the assigned modules")
+		END IF
+		PRINT("-" * 30)
+		PRINT("")
+	END FOR
+END DEFINE
+
+DEFINE FUNCTION mark_attendance(course_codes, student_info)
+	OPEN file ENROLLMENTS_FILE IN READ MODE AS file 
+	FOR EACH line IN file 
+		APPEND line TO lines
+	END FOR 
+	DECLARE updated_lines AS LIST
+	SET student_found TO False 
+	FOR EACH line IN lines
+		EVAL line.strip() INTO data
+		SET student_id TO data[0]
+		SET student_name TO data[1]
+		SET attendance_courses TO data[2:] 
+		IF student_id EQUALS student_info[0] THEN 
+			SET student_found TO True
+			SET course_updated TO False 
+			FOR EACH course IN attendance_courses
+				IF course[0] EQUALS course_codes THEN
+					SET present TO course[2]
+					SET absent TO course[3]
+					SET valid TO False
+					SET choice TO ""
+					WHILE NOT valid
+						PRINT("Is " + student_name + " present in " + course_codes + " [Y/N]? ")
+						GET choice
+						IF choice EQUALS "Y" THEN
+							SET present TO present + 1
+							SET valid TO True
+						ELSE IF choice EQUALS "N" THEN
+							SET absent TO absent + 1 
+							SET valid TO True
+						ELSE 
+							PRINT("Invalid input. Please enter 'Y' or 'N'.")
+						END IF
+					END WHILE 
+					SET course[2] TO present
+					SET course[3] TO absent 
+					SET course_updated TO True
+					PRINT("[" + ('ABSENT' IF choice EQUALS 'N' ELSE 'PRESENT') + "] " + student_name + " in Module " + course_codes + ".")
+				END IF
+			END FOR
+			IF NOT course_updated THEN
+				PRINT("No enrollment found for " + student_name + " in " + course_codes + ".")
+			END IF 
+		END IF
+		APPEND str(data) + "\n" TO updated_lines
+	END FOR
+	IF NOT student_found THEN
+		PRINT("Student " + student_info[1] + " (ID: " + student_info[0] + ") not found in enrollments")
+	END IF 
+	OPEN file ENROLLMENTS_FILE IN WRITE MODE AS file
+	FOR EACH updated_line IN updated_lines 
+		WRITE updated_line TO file
+	END FOR
+END DEFINE
+
+DEFINE FUNCTION view_student_grades(lecturer_id, course_codes)
+    OPEN file "enrollments.txt" IN READ MODE AS file
+    DECLARE lines AS LIST
+    FOR EACH line IN file 
+        APPEND line TO lines
+    END FOR
+    DECLARE filtered_records AS LIST
+    FOR EACH line IN lines 
+        IF line IS NOT EMPTY THEN
+            EVAL line.strip() INTO data
+            SET student_id TO data[0]
+            SET student_name TO data[1]
+            SET grade_courses TO data[2:]
+            FOR EACH course IN grade_courses 
+                IF course[0] EQUALS course_codes THEN
+                    SET grade TO course[1]
+                    APPEND (student_id, student_name, grade) TO filtered_records
+                END IF
+            END FOR
+        END IF
+    END FOR
+    IF filtered_records IS NOT EMPTY THEN
+        PRINT("Grades for Module: " + course_codes + " (Lecturer ID: " + lecturer_id + ")")
+        PRINT("    ID    |    Name    | Grade")
+        FOR EACH record IN filtered_records
+            PRINT(record[0] + " | " + record[1] + " | " + record[2])
+        END FOR
+    ELSE
+        PRINT("No records found for Module: " + course_codes + ".")
+    END IF
+END DEFINE
+
+
+
+DEFINE FUNCTION available_module
+	PRINT("Available Courses")
+	WHILE True 
+		DEFINE module_list AS LIST 
+		OPEN file COURSES_FILE IN READ MODE AS file
+		FOR EACH LINE IN file 
+			SPLIT line BY "," INTO data
+			APPEND data TO module_list
+		END FOR
+		FOR EACH index, course IN module_list
+			PRINT(index + 1 +".Course Code: " + course[0])
+			PRINT("Course Name: " + course[1])
+			PRINT("Credit: " + course[2])
+		END FOR
+		CALL continue_back_exit
+		BREAK LOOP 
+	END WHILE
+	PRINT("The file path cannot be found, try and fix this issue beforehand.")
+	EXIT	
+END DEFINE
+
+DEFINE FUNCTION enroll_student
+	PRINT("Enroll Student to a Course")
+	WHILE True
+		PRINT("Student ID: ")
+		GET enroll_student_id
+		PRINT("Student Name: ")
+		GET enroll_student_name
+		DEFINE validate_students AS LIST
+		OPEN file STUDENTS_FILE IN READ MODE AS student_file
+		FOR EACH line IN student_file
+			SPLIT line BY "," INTO data 
+			APPEND data TO validate_students
+		END FOR
+		FOR EACH data IN validate_students
+			IF data[0] EQUALS enroll_student_id AND data[1] EQUAL enroll_student_name THEN
+				OPEN file ENROLLMENTS_FILE IN READ MODE AS enrollment_file
+				FOR EACH line IN enrollment_file
+					IF line IS NOT EMPTY THEN
+						SPLIT line BY "," INTO data 
+						IF data[0] EQUALS enroll_student_id AND data[1] EQUAL enroll_student_name THEN
+							PRINT("There is already data for this student in the system")
+							CALL FUNCTION continue_back_exit
+							RETURN
+						END IF
+					END IF
+				END FOR 
+				DEFINE validate_courses AS LIST
+				OPEN file COURSE_FILE IN READ MODE AS course_file
+				FOR EACH line IN course_file
+					SPLIT line BY "," INTO data
+					APPEND data[0] TO validate_courses
+				END FOR 
+				DEFINE enrollment_record AS LIST 
+				APPEND enroll_student_id TO enrollment_record 
+				APPEND enroll_student_name TO enrollment_record
+				SET total_student_course TO 5
+				FOR i FROM 0 TO total_student_course - 1
+					WHILE True 
+						PRINT("Enter course code for course" + (i + i) + ": ")
+						GET enroll_course_code
+						IF enroll_course_code NOT IN validate_courses THEN
+							PRINT("Error: Invalid course code.")
+						ELSE 
+							APPEND [enroll_course_code, None, 0,0] TO enrollment_record
+							BREAK LOOP
+						END IF
+					END WHILE 
+				END FOR 
+				OPEN file ENROLLMENTS_FILE IN APPEND MODE AS enrollments_file
+				WRITE enrollment_record JOINED BY "," TO enrollments_file
+				PRINT("Successfully enrolled student in course")
+				CALL FUNCTION continue_back_exit
+				RETURN
+			END IF
+		END FOR 
+		PRINT("Student does not exist")
+		PRINT("Press 0 if you want to cancel or press any key to continue")
+		GET cancel_input 
+		IF cancel_input EQUALS '0' THEN
+			BREAK LOOP 
+		END IF 
+	END WHILE 
+	PRINT("File does not exist, creating one right now")
+	PRINT("Please try using your function now")
+	OPEN file ENROLLMENTS_FILE IN WRITE MODE AND CLOSE
+	EXIT 
+END DEFINE
+
+DEFINE FUNCTION view_enrollments 
+	PRINT("Student Enrollments")
+		WHILE True
+			DEFINE enrollments_list AS LIST
+			OPEN file ENROLLMENTS_FILE IN READ MODE AS file 
+			FOR EACH line IN file 
+				IF line IS NOT EMPTY THEN 
+					SPLIT line BY "," INTO data
+					APPEND data TO enrollments_list
+				END IF
+			END FOR 
+			FOR EACH index, enrollment IN enrollments_list
+				SET student_id TO enrollment[0]
+				SET student_name TO enrollment[1]
+				SET enrollment_courses TO enrollment[2:]
+				SET course_details TO JOIN [[course[0], course[1] IF course[1] ELSE 'N/A', course[2] IF course[2] ELSE 'N/A', course[3] IF course[3] ELSE 'N/A']] FOR EACH course IN enrollment_courses WITH ", "
+            PRINT((index + 1) + ". Student ID: " + student_id)
+            PRINT("Student Name: " + student_name)
+            PRINT("Courses: " + course_details)
+        END FOR
+        BREAK LOOP
+    END WHILE
+    PRINT("The file path cannot be found, try and fix this issue beforehand.")
+    EXIT
+END DEFINE
+
+DEFINE FUNCTION un_enroll_student
+	CALL FUNCTION view_enrollments
+	WHILE True
+		PRINT("Which one do you want to remove?")
+		PRINT("Student ID:")
+		GET un_enroll_studen_id
+		PRINT("Student Name: ")
+		GET un_enroll_student_name
+		DEFINE enrollments AS LIST
+		OPEN file ENROLLMENTS_FILE IN READ MODE AS FILE 
+		DEFINE updated_enrollment AS LIST 
+		FOR EACH line IN enrollments
+			IF line IS NOT EMPTY THEN 
+				SPLIT line BY "," INTO data
+				SET student_id TO data[0]
+				SET student_name TO data[1]
+				IF student_id EQUALS un_enroll_student_id AND student_name EQUALS un_enroll_student_name THEN
+					PRINT("Successfully un-enrolled student")
+					SET un_enroll_student_id TO None
+					SET un_enroll_student_name TO None
+				ELSE
+					APPEND line TO updated_enrollment
+				END IF
+			END IF
+		END FOR
+		IF un_enroll_student_id IS None THEN
+			OPEN file ENROLLMENTS_FILE IN WRITE MODE AS file
+			WRITE updated_enrollments JOINED BY "\n" TO file
+			CALL FUNCTION continue_back_exit
+			RETURN
+		ELSE
+			PRINT("Student is not from the list")
+			PRINT("Press 0 if you want to cancel or press any key to continue")
+			GET cancel_input
+			IF cancel_input EQUALS '0' THEN 
+				BREAK LOOP
+			END IF 
+		END IF
+	END WHILE 
+	PRINT("The file path cannot be found, try and fix this issue beforehand.")
+	EXIT
+END DEFINE 
+
+DEFINE FUNCTION view_grades
+	PRINT("Access Student Grades")
+	WHILE True 
+		PRINT("Student ID: ")
+		GET grades_student_id
+		PRINT("Student Name: ")
+		GET grades_student_name
+		PRINT("Course Code: ")
+		GET grades_student_courses
+		OPEN file ENROLLMENTS_FILE IN READ MODE AS file 
+		DEFINE enrollments AS LIST
+		FOR EACH line IN file 
+			IF line IS NOT EMPTY THEN 
+				SPLIT line BY "," INTO data
+				APPEND data TO enrollments
+			END IF
+		END FOR
+		FOR EACH enrollment IN enrollments 
+			SET student_id TO enrollment[0]
+			SET student_name TO enrollment[1]
+			SET grade_courses TO enrollment[2:]
+			IF student_id EQUALS grades_student_id AND student_name EQUALS grades_student_name THEN
+				FOR EACH course In grade_courses
+					SPLIT course INTO course_code, grade, rest 
+					IF course_code EQUALS grades_student_courses THEN
+						SET grades TO grade IF grade IS NOT NONE ELSE 'N/A'
+						PRINT("Details")
+						PRINT("Student ID: " + student_id)
+						PRINT("Student Name: " + student_name)
+						PRINT("Course: " + course_code)
+						PRINT("Grade: " + grades)
+						RETURN
+					END IF
+				END FOR
+			END IF
+		END FOR
+		PRINT("Error: No data found")
+		PRINT("Press 0 if you want to cancel or press any key to continue")
+		GET cancel_input
+		IF cancel_input EQUALS '0' THEN
+			BREAK LOOP
+		END IF
+	END WHILE 
+	PRINT("The file path cannot be found, try and fix this issue beforehand")
+	EXIT
+END DEFINE
+
+DEFINE FUNCTION view_attendance
+	PRINT("View Student Attendance Percentage")
+	WHILE True
+		PRINT("Student ID: ")
+		GET attendance_student_id
+		PRINT("Student Name: ")
+		GET attendance_student_name
+		PRINT("Course code: ")
+		GET attendance_student_course
+		OPEN file ENROLLMENTS_FILE IN READ MODE AS file 
+		DEFINE enrollments AS LIST
+		FOR EACH line IN file
+			IF line IS NOT EMPTY THEN
+				SPLIT line BY "," INTO data
+				APPEND data TO enrollments 
+			END IF
+		END FOR 
+		FOR EACH enrollment IN enrollments
+			SET student_id TO enrollment[0]
+			SET student_name TO enrollment[1]
+			SET attendance_courses TO enrollment[2:]
+			IF student_id EQUALS attendance_student_id AND student_name EQUALS attendance_student_name THEN
+				FOR EACH course IN attendance_courses
+					SPLIT course INTO course_code, grade, present, absent
+					IF course_code EQUALS attendance_student_courses THEN
+						SET present TO present IF present ELSE 0
+						SET absent TO absent IF absent ELSE 0
+						IF present + absent > 0 THEN 
+							SET attendance_percentage TO (present / (present + absent)) * 100
+						ELSE 
+							SET attendance_percentage TO 0 
+						PRINT("Student Attendance")
+						PRINT("Student ID: " + student_id)
+						PRINT("Student Name: " + student_name)
+						PRINT("Course: " + course_code)
+						PRINT("Attendance Percentage: " + attendance_percentage + "%")
+						RETURN 
+					END IF
+				END FOR 
+			END IF
+		END FOR
+		PRINT("Error: No data found")
+		PRINT("Press 0 if you want to cancel or press any key to continue")
+		GET cancel_input
+		IF cancel_input EQUALS '0' THEN
+			BREAK LOOP
+		END IF
+	END WHILE 
+	PRINT("The file path cannot be found, try and fix this issue beforehand")
+	EXIT
+END DEFINE
+
+		
+
+PROGRAM REGISTRATOR 
+DEFINE FUNCTION add_student_id(students)
+	WHILE True 
+		PRINT("Enter student's ID (TPXXXXXX): ")
+		GET new_student_id 
+		IF null_input(new_student_id) THEN
+			CONTINUE
+		ELSE IF cancel_command(new_student_id) THEN
+			RETURN None
+		END IF 
+		FOR EACH student IN students
+			IF student[0] EQUALS new_student_id THEN
+				PRINT("Invalid input, (" + new_student_id + " already exists).")
+				BREAK LOOP
+			END IF
+		ELSE
+			OPEN file STUDENTS_FILE IN READ MODE AS students_file
+			DEFINE duplicate_found AS False
+			FOR EACH student IN students_file
+				SET student_id_from_file TO student.split(",")[0].strip()
+				IF new_student_id EQUALS student_id_from_file THEN
+					PRINT("Invalid input, (" + new_student_id + " already exists).")
+					SET duplicate_found TO True
+					BREAK LOOP 
+				END IF 
+			END FOR
+			IF NOT duplicate_found THEN
+				RETURN new_student_id
+			END IF 
+		END FOR 
+		EXCEPTION FileNotFoundError THEN
+			RETURN new_student_id
+	END WHILE 
+END DEFINE 
+
+DEFINE FUNCTION add_student_name 
+	WHILE True
+		PRINT("Enter student's name: ")
+		GET new_student_name 
+		IF null_input(new_student_name) THEN 
+			CONTINUE
+		ELSE IF cancel_command(new_student_name) THEN
+			RETURN None	
+		ELSE IF ANY(char IS NUMERIC FOR char IN new_student_name) THEN
+			PRINT("Student name must be alphabetic. Please try again")
+			CONTINUE 
+		ELSE
+			RETURN new_student_name
+		END IF 
+	END WHILE 
+END DEFINE 
+
+DEFINE FUNCTION add_contact_information 
+	WHILE True 
+		PRINT("Please enter the student's contact information (60XXXXXXXXXX): ")
+		GET new_contact_information
+		IF null_input(new_contact_information) THEN
+			CONTINUE
+		ELSE IF cancel_command(new_contact_information) THEN
+			RETURN None
+		ELSE IF new_contact_information.isnumeric() THEN
+			RETURN new_contact_information
+		ELSE
+			PRINT("Student's contact information must be numeric. Please try again.")
+		END IF 
+	END WHILE 
+END DEFINE
+
+DEFINE FUNCTION add_program
+	WHILE True 
+		PRINT("Enter student's program: ")
+		GET new_program 
+		IF null_input(new_program) THEN
+			CONTINUE
+		ELSE IF cancel_command(new_program) THEN
+			RETURN None 
+		ELSE 
+			RETURN new_program
+		END IF
+	END WHILE 
+END DEFINE 
+
+DEFINE FUNCTION add_department 
+	WHILE True
+		PRINT("Enter student's department: ")
+		GET new_department 
+		IF null_input(new_department) THEN
+			CONTINUE
+		ELSE IF cancel_command(new_department) THEN
+			RETURN None
+		ELSE 
+			RETURN new_department
+		END IF 
+	END WHILE 
+END DEFINE 
+
+DEFINE FUNCTION register_new_students(students)
+	PRINT("Register New Students")
+	PRINT("If you want to cancel, type 'cancel' at any step to stop adding the course.")
+	new_student_id = CALL FUNCTION add_student_id(students)
+	IF new_student_id IS None THEN
+		RETURN 
+	END IF 
+	new_student_name = CALL FUNCTION add_student_name()
+	IF new_student_name IS None THEN
+		RETURN 
+	END IF
+	new_contact_information = CALL FUNCTION add_contact_information() 
+	IF new_contact_information IS None THEN 
+		RETURN 
+	END IF
+	new_program = CALL FUNCTION add_program()
+	IF new_program IS None THEN
+		RETURN
+	END IF
+	new_department = CALL FUNCTION add_department()
+	IF new_department IS None THEN
+		RETURN
+	END IF 
+	APPEND [new_student_id, new_student_name, new_contact_information, new_program, new_department] TO students 
+	PRINT(new_student_name + " has been registered successfully!")
+	OPEN file STUDENTS_FILE IN APPEND MODE AS file 
+	WRITE new_student_id + "," + new_student_name + "," + new_contact_information + "," + new_program + "," + new_department + "\n" TO file
+END DEFINE 
+
+DEFINE FUNCTION load_students(students_list)
+	OPEN file STUDENTS_FILE IN READ MODE AS file
+	IF file EXISTS THEN
+		FOR EACH line IN file 
+			SPLIT line.strip() BY "," INTO student_id, student_name, student_contact_info, student_program, student_department
+			APPEND [student_id, student_name, student_contact_info, student_program, student_department] TO students_list
+		END FOR 
+	ELSE
+		PRINT("Students file not found. Starting with an empty list.")
+	END IF 
+	RETURN students_list
+END DEFINE
+
+DEFINE FUNCTION save_students(students_list)
+	OPEN file STUDENTS_FILE IN WRITE MODE AS file 
+	FOR EACH student In students_list
+		student_string = ""
+		FOR EACH attribute IN student 
+			IF student_string IS NOT EMPTY THEN
+				student_string = student_string + ","
+			END IF 
+			student_string = student_string + attribute
+		END FOR 
+		WRITE student_string + "\n" TO file
+	END FOR
+END DEFINE
+
+DEFINE FUNCTION update_students_option 
+	PRINT("What would you like to update?")
+	PRINT("1. Name")
+	PRINT("2. Contact Information")
+	PRINT("3. Program")
+	PRINT("4. Department")
+	PRINT("5. Cancel")
+	PRINT("Enter the function that you want to update: ")
+	GET input_choices
+	IF input_choices IS NUMERIC THEN 
+		RETURN INTEGER(input_choices)
+	ELSE
+		PRINT("Invalid input. Please enter a valid number.")
+		RETURN None 
+	END IF
+END DEFINE
+
+DEFINE FUNCTION update_student_info(index_input, students_list)
+	PRINT("What would you like to update?")
+	PRINT("1. Name")
+	PRINT("2. Contact Information")
+	PRINT("3. Program")
+	PRINT("4. Department")
+	PRINT("5. Cancel")
+	input_choices = CALL FUNCTION update_students_option()
+	IF input_choices EQUALS 1 THEN 
+		PRINT("(If you want to cancel, type 'cancel' at any step to stop updating the student's name.)")
+		new_name = CALL FUNCTION add_student_name()
+		IF new_name IS None THEN
+			RETURN False
+		END IF 
+		students_list[index_input][1] = new_name
+	ELSE IF input_choices EQUALS 2 THEN 
+		PRINT("(If you want to cancel, type 'cancel' at any step to stop updating the student's name.)")
+		new_contact_information = CALL FUNCTION new_contact_information()
+		IF new_contact_information IS None THEN
+			RETURN False
+		END IF 
+		students_list[index_input][2] = new_contact_information
+	ELSE IF input_choices EQUALS 3 THEN 
+		PRINT("(If you want to cancel, type 'cancel' at any step to stop updating the student's name.)")
+		new_program = CALL FUNCTION new_program()
+		IF new_program IS None THEN
+			RETURN False
+		END IF 
+		students_list[index_input][3] = new_program
+	ELSE IF input_choices EQUALS 4 THEN 
+		PRINT("(If you want to cancel, type 'cancel' at any step to stop updating the student's name.)")
+		new_department = CALL FUNCTION new_department()
+		IF new_department IS None THEN
+			RETURN False
+		END IF 
+		students_list[index_input][4] = new_department
+	ELSE IF input_choices EQUALS 5 THEN
+		PRINT("Update canceled.")
+		RETURN 
+	ELSE 
+		PRINT("Invalid choice. Please try again.")
+		RETURN 
+	END IF 
+	PRINT("Student " + students_list[index_input][0] + " updated successfully.")
+	CALL FUNCTION save_students(students_list)
+END DEFINE
+
+DEFINE FUNCTION update_students(student_list)
+	CALL FUNCTION load_students(student_list)
+	IF NOT CALL FUNCTION display_students(students_list) THEN 
+		RETURN
+	END IF 
+	PRINT("Enter the number of the student you want to update: ")
+	GET index_input
+	IF NOT index_input IS NUMERIC THEN
+		PRINT("Invalid input. Please enter a valid number.")
+		RETURN
+	END IF 
+	SET index_input TO INTEGER(index_input) - 1
+	IF index_input < 0 OR index_input >= LENGTH(students_list) THEN
+		PRINT("Invalid input, please try again")
+		RETURN
+	END IF 
+	selected_students = students_list[index_input]
+	PRINT("Selected student: " + selected_students[0])
+	CALL FUNCTION update_student_info(index_input, students_list)
+END DEFINE 
+	
+DEFINE FUNCTION manage_enrollments
+	PRINT("Manage Enrollments")
+	CALL FUNCTION view_enrollments()
+	WHILE True
+		PRINT("Which one do you want to update?")
+		PRINT("Enter the Student ID: ")
+		GET enrollments_student_id
+		PRINT("Enter the Student Name: :)
+		GET enrollments_student_name
+		student_found = False
+		successful_update = False 
+		OPEN file ENROLLMENTS_FILE IN READ MODE AS file
+		IF file EXISTS THEN 
+			enrollments = READ_LINES file
+			updated_enrollments = []
+			valid_course = []
+			OPEN file COURSE_FILE IN READ MODE AS course_txt
+			FOR EACH line in course_txt
+				APPEND line.split(",")[0].strip().upper() TO valid_course
+			END FOR 
+			FOR EACH line IN enrollments
+				IF line.strip() IS NOT EMPTY THEN
+					data = EVAL(line.strip())
+					student_id = data[0]
+					student_name = data[1]
+					courses = data[2:]
+					IF student_id EQUALS enrollments_student_id AND student_name EQUALS enrollments_student_name THEN
+						student found = True
+						WHILE True
+							PRINT("Enter the course code to remove: ")
+							GET enrollments_course_code
+							enrollments_course_code = enrollments_course_code.strip().upper()
+							student_courses = [] 
+							remove_course = False 
+							FOR EACH course IN courses
+								IF course[0] EQUALS enrollments_course_code THEN
+									remove_course = True
+								ELSE 
+									APPEND course TO student_courses
+								END IF 
+							END FOR 
+							IF NOT remove_course THEN
+								PRINT("Error: Student not enrolled in this course")
+								CONTINUE
+							END IF
+							BREAK
+						END WHILE 
+						data[2:]
+						WHILE True
+							PRINT("Enter the new course code: ")
+							GET change_course
+							change_course = change_course.strip().upper()
+							duplicate_course = False 
+							FOR EACH course IN student_courses 
+								IF course[0] EQUALS change_course THEN
+									duplicate_course = True
+									BREAK
+								END IF
+							END FOR 
+							IF change_course IN valid_course AND NOT duplicate_course THEN 
+								new_course = [change_course, None, None, None]
+								APPEND new_course TO student_courses
+								data[2:] student_courses
+								PRINT("Successfully updated student course.")
+								successful_update = True
+								BREAK 
+							ELSE IF duplicate_course THEN
+								PRINT("Error: Student already enrolled in this course.")
+								CONTINUE
+							END IF 
+						END WHILE 
+					END IF 
+					APPEND f"{data}" TO updated_enrollments
+				END IF
+			END FOR 
+			IF NOT student_found THEN 
+				PRINT("Error: Student not found.")
+				PRINT("Press 0 if you want to cancel or press anything to continue")
+				GET cancel_input 
+				IF cancel_input EQUALS '0' THEN
+					BREAK 
+				ELSE
+					CONTINUE
+				END IF 
+			END IF 
+			OPEN file ENROLLMENTS_FILE IN WRITE MODE AS file 
+			WRITE updated_enrollments TO file
+			IF successful_update THEN
+				BREAK
+			END IF
+		ELSE 
+			PRINT("The file path cannot be found, try and fix this issue beforehand.")
+			RETURN
+		END IF
+	END WHILE 
+END DEFINE 
+
+DEFINE issue_transcripts 
+	PRINT("Issue Student Transcript")
+	WHILE True
+		PRINT("Student ID: ")
+		GET transcripts_student_id 
+		PRINT("Student Name: ")
+		GET transcripts_student_name 
+		student_found = False 
+		OPEN file ENROLLMENTS_FILE IN READ MODE AS file
+		IF file EXISTS THEN
+			FOR EACH line IN file 
+				data = EVAL(line.strip())
+				student_id = data[0]
+				student_name = data[1]
+				courses = data[2:]
+				IF student_id EQUALS transcripts_student_id AND student_name EQUALS transcripts_student_name THEN
+					PRINT("Student Transcripts")
+					PRINT("Student ID: " + student_id + "\nStudent Name: " + student_name")
+					PRINT("Course Code:		Grades: 	Attendance: ")
+					FOR EACH course IN courses
+						course_code = course[0]
+						grades = IF course[1] IS NOT EMPTY THEN course[1] ELSE 'N/A'
+						present = IF course[2] IS NOT EMPTY THEN course[2] ELSE 0
+						absent = IF course[3] IS NOT EMPTY THEN course[3] ELSE 0
+						IF present + absent > 0 THEN 
+							attendance_percentage = (present / (present + abssent)) * 100
+						ELSE
+							attendance_percentage = 0
+						END IF
+						PRINT(course_code + " " + grades + " " + attendance_percentage + "%")
+					END FOR 
+					student_found = True 
+					BREAK 
+				END IF
+			END FOR 
+			IF NOT student_found THEN 
+				PRINT("Error: No student found.")
+				PRINT("Press 0 if you want to cancel or press anything to continue")
+				GET cancel_input
+				IF cancel_input EQUALS '0' THEN
+				BREAK 
+				ELSE
+					CONTINUE
+				END IF
+			END IF 
+		ELSE 
+			PRINT("The file path cannot be found, try and fix this issue beforehand.")
+			RETURN 
+		END IF
+	END WHILE 
+END DEFINE 
+			
+DEFINE FUNCTION student_information
+	PRINT("View student information")
+	WHILE True
+		PRINT("Student ID: ")
+		GET info_student_id
+		PRINT("Student Name: ")
+		GET info_student_name
+		student_found = False
+		OPEN file STUDENTS_FILE IN READ MODE AS file 
+		IF file EXISTS THEN 
+			FOR EACH line IN file 
+				data = SPLIT(line.strip(), ",")
+				IF data[0] EQUALS TO info_student_id AND data[1] EQUALS info_student_name THEN
+					PRINT("Student Information")
+					PRINT("Student ID: " + data[0])
+					PRINT("Student Name: " + data[1])
+					PRINT("Program: " data[3])
+					PRINT("Department: " + data[4])
+					student_found = True
+					BREAK
+				END IF
+			END FOR 
+			IF NOT student_found THEN
+				PRINT("Error: No student found.")
+				PRINT("Press 0 if you want to cancel or press anything to continue")
+				GET cancel_input
+				IF cancel_input EQUALS '0' THEN
+					BREAK
+				ELSE
+					CONTINUE
+				END IF
+			END IF
+		ELSE
+			PRINT("The file path cannot be found, try and fix this issue beforehand.")
+			RETURN
+		END IF
+	END WHILE
+END DEFINE
+		
+
+
+DEFINE FUNCTION subtraction(num1, num2)
+	DECLARE result AS INTEGER
+	SET result TO num1 MINUS num2 
+	RETURN result AS STRING
+END DEFINE
+
+DEFINE FUNCTION addition(num1, num2)
+	DECLARE result AS INTEGER
+	SET result TO num1 ADD num2 
+	RETURN result AS STRING
+END DEFINE
+
+DEFINE FUNCTION record_or_add_tuition
+	PRINT("Record or Add Tuition Fees for Student")
+	WHILE True
+		PRINT("Student ID: ")
+		GET tuition_student_id
+		PRINT("Student Name: ")
+		GET tuition_student_name
+		PRINT("Program: ")
+		GET tuition_student_program
+		DECLARE validate_students AS LIST
+		OPEN file STUDENTS_FILE IN READ MODE AS student_file
+		FOR EACH LINE IN student_file
+			SPLIT line BY "," INTO data
+			APPEND data TO validate_students
+		END FOR
+		FOR EACH data IN validate_students
+			IF data[0] EQUALS tuition_student_id AND data[1] EQUALS tuition_student_name AND data[3] EQUALS tuition_student_program THEN
+				OPEN file TUITION_FILE IN READ MODE AS tuition_file
+				FOR EACH LINE IN tuition_file
+					SPLIT line BY "," INTO data 
+					IF data[0] EQUALS tuition_student_id AND data[1] EQUALS tuition_student_name AND data[2] EQUALS tuition_student_program THEN
+						PRINT("There is an existing record of this student tuition in the system. Type '0' if you don't wish to change the data.")
+					ELSE
+						PRINT("Tuition Fees: ")
+						GET total_tuition
+						IF CALL update_tuition_record(tuition_student_id, tuition_student_name, tuition_student_program, total_tuition, '0') THEN
+							PRINT("Tuition record updated successfully for" + tuition_student_id)
+						ELSE
+							PRINT("New tuition record added successfully for" + tuition_student_id)
+						END IF
+						CALL continue_back_exit
+						RETURN 
+					END IF
+				END FOR 
+			ELSE
+				PRINT("Student does not exist")
+				PRINT("Press '0' if you want to cancel or press anything to continue")
+				GET cancel_input
+				IF cancel_input EQUALS '0' THEN
+					BREAK LOOP
+				END IF
+			END IF
+		END FOR
+	END WHILE 
+	PRINT("FIle does not exist, creating one right now.")
+	PRINT("Please try using the functions now.")
+	OPEN file TUITION_FILE IN WRITE MODE AND CLOSE
+	EXIT
+END DEFINE
+
+DEFINE update_tuition_record(student_id, student_name, student_program, total_tuition, paid_tuition)
+	SET updated_data TO False
+	DEFINE records AS LIST
+	OPEN file TUITION_FILE IN READ MODE AS file
+	FOR EACH line IN file 
+		SPLIT line BY "," INTO data
+		IF data[0] EQUALS student_id AND data[1] EQUALS student_name AND data[2] EQUALS student_program THEN
+			SET data[3] TO addition(data[3], total_tuition) 
+			SET data[4] TO addition(data[4], paid_tuition)
+			SET data[5] TO subtraction(data[3], data[4])
+			SET updated_data TO True
+		END IF
+		APPEND data TO records
+	END FOR
+	IF NOT updated_data THEN
+		APPEND [student_id, student_name, student_program, total_tuition, paid_tuition, subtraction(total_tuition, paid_tuition)] TO records
+	END IF 
+	OPEN file TUITION_FILE IN WRITE MODE AS file
+	FOR EACH record IN records
+		WRITE record JOINED BY "," TO file
+	END FOR 
+	RETURN updated_data
+END DEFINE
+
+DEFINE FUNCTION payment_records
+	PRINT("Record Student Tuition Fees Paid by Student")
+	WHILE True
+		PRINT("Student ID: ")
+		GET paid_student_id
+		DECLARE validate_record AS LIST 
+		OPEN file TUITION_FILE IN READ MODE AS tuition_file
+		FOR EACH line IN tuition_file
+			SPLIT line BY "," INTO data
+			APPEND data to validate_record
+		END FOR
+		FOR EACH data IN validate_record
+			IF data[0] EQUALS paid_student_id
+				PRINT("Add paid Tuition Fees: ")
+				GET paid_tuition
+				SET data[4] TO addition(data[4], paid_tuition)
+				SET data[5] TO subtraction(data[3], data[4])
+				PRINT("Tuition record updated successfully for " + paid_student_id)
+				OPEN file TUITION_FILE IN WRITE MODE AS file 
+				FOR EACH record in validate_record
+					WRITE record JOINED BY "," TO file 
+				END FOR
+				CALL FUNCTION continue_back_exit
+				RETURN 
+			END IF 
+		END FOR
+		PRINT("Student ID not found")
+		PRINT("Press '0' if you want to cancel or press anything to continue")
+		GET cancel_input
+		IF cancel_input EQUALS '0' THEN
+			BREAK LOOP
+		END IF
+	END WHILE
+	PRINT("The file path cannot be found, try and fix this issue beforehand")
+	EXIT
+END DEFINE
+
+DEFINE FUNCTION outstanding_fee
+	PRINT("List of students with Outstanding Fee")
+	WHILE True
+		OPEN file TUITION_FILE IN READ MODE AS file 
+		DEFINE outstanding_fee_list AS LIST
+		FOR EACH line IN file 
+			SPLIT line BY "," INTO data
+			IF data[5] NOT EQUAL 0 THEN
+				APPEND data TO outstanding_fee_list
+			END IF
+		END FOR 
+		FOR EACH index, student IN outstanding_fee_list
+			PRINT((index + 1) + ". Student ID: " + student[0])
+			PRINT("Student Name: " + student[1])
+			PRINT("Program: " + student[2])
+			PRINT("Outstanding Fees: " + student[5])
+		END FOR
+		CALL FUNCTION continue_back_exit
+		BREAK LOOP
+	END WHILE
+	PRINT("The file path cannot be found, try and fix this issue beforehand")
+	EXIT
+END DEFINE
+
+DEFINE FUNCTION fee_receipts
+	PRINT("Print Tuition Reciept")
+	WHILE True
+		PRINT("Input the Student ID: ")
+		GET receipt_student_id
+		PRINT("Input the Student Name: ")
+		GET receipt_student_name
+		PRINT("Input their Program: ")
+		GET receipt_student_program
+		DEFINE validate_record AS LIST 
+		OPEN file TUITION_FILE IN READ MODE AS file
+		FOR EACH line IN file 
+			SPLIT line BY "," INTO data
+			APPEND data TO validate_record
+		END FOR
+		FOR EACH data IN validate_record
+			IF data[0] EQUALS receipt_student_id AND data[1] EQUALS receipt_student_name AND data[2] EQUALS receipt_student_program THEN
+				PRINT("Student ID: " + data[0])
+				PRINT("Student Name: " + data[1])
+				PRINT("Program: " + data[2])
+				PRINT("Total Tuition: " + data[3])
+				PRINT("Paid Tuition: " + data[4])
+				PRINT("Outstanding Fee: " + data[5])
+				CALL FUNCTION continue_back_exit
+				RETURN
+			END IF 
+		END FOR
+		PRINT("Error: NO student found.")
+		PRINT("Press 0 if you want to cancel or press anything to continue")
+		GET cancel_input 
+		IF cancel_input EQUALS '0' THEN
+			BREAK LOOP
+		END IF
+	END WHILE
+		PRINT("The file path cannot be found, try and fix this issue beforehand.")
+		EXIT
+END DEFINE
+
+DEFINE FUNCTION financial_summary
+	PRINT("APU Financial Summary")
+	DECLARE tuition_summary AS FLOAT
+	DECLARE paid_summary AS FLOAT
+	DECLARE outstanding_summary AS FLOAT
+	IF file TUITION_FILE EXISTS THEN
+		OPEN file TUITION_FILE IN READ MODE  
+		FOR EACH line IN file 
+			SPLIT line BY "," INTO data
+			SET tuition_summary TO tuition_summary PLUS CONVERT data[3] TO FLOAT
+			SET paid_summary TO paid_summary PLUS CONVERT (data[4]) TO FLOAT
+			SET outstanding_summary TO outstanding_summary PLUS CONVERT (data[5]) TO FLOAT
+		END FOR
+		PRINT("Total Tuition Fees: " + CONVERT tuition_summary TO STRING)
+		PRINT("Total Paid Fees: " + CONVERT paid_summary TO STRING)
+		PRINT("Total Outstanding Fees: " + CONVERT outstanding_summary TO STRING)
+		CALL continue_back_exit
+	ELSE
+		PRINT("The file path cannot be found, try and fix this issue beforehand")
+		EXIT 
+	END IF
+END DEFINE		
+
